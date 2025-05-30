@@ -1,0 +1,42 @@
+# k8s/task-service-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: task-service-deployment
+  labels:
+    app: task-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: task-service
+  template:
+    metadata:
+      labels:
+        app: task-service
+    spec:
+      containers:
+      - name: task-service
+        image: task-service:0.1 # <<< Verifique se o nome e a tag da sua imagem estão corretos
+        imagePullPolicy: IfNotPresent # Ou Never, já que a imagem deve estar no Minikube
+        ports:
+        - containerPort: 3001 # Porta que a sua app TaskService escuta
+        env:
+        - name: NODE_ENV
+          value: "development"
+        - name: TASK_SERVICE_PORT # A porta que o server.js do TaskService usa
+          value: "3001"
+        - name: DB_HOST
+          value: "mariadb-service" # Nome do Service Kubernetes da MariaDB
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_USERNAME
+          value: "root"
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-secret # Nome do Secret da MariaDB
+              key: MARIADB_ROOT_PASSWORD
+        - name: DB_NAME
+          value: "task_management_db"
+        # Adicione outras variáveis de ambiente específicas do TaskService, se houver

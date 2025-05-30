@@ -1,0 +1,42 @@
+# k8s/user-service-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user-service-deployment
+  labels:
+    app: user-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: user-service
+  template:
+    metadata:
+      labels:
+        app: user-service
+    spec:
+      containers:
+      - name: user-service
+        image: user-service:0.1 # <<< Verifique se o nome e a tag da sua imagem estão corretos
+        imagePullPolicy: IfNotPresent # Ou Never, já que a imagem deve estar no Minikube
+        ports:
+        - containerPort: 3003 # Porta que a sua app UserService escuta
+        env:
+        - name: NODE_ENV
+          value: "development"
+        - name: USER_SERVICE_PORT # A porta que o server.js do UserService usa
+          value: "3003"
+        - name: DB_HOST
+          value: "mariadb-service" # Nome do Service Kubernetes da MariaDB
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_USERNAME
+          value: "root"
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-secret # Nome do Secret da MariaDB
+              key: MARIADB_ROOT_PASSWORD
+        - name: DB_NAME
+          value: "task_management_db"
+        # Adicione outras variáveis de ambiente específicas do UserService, se houver

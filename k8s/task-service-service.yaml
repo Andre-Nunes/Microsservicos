@@ -1,0 +1,13 @@
+# k8s/task-service-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: task-service # Este será o nome DNS interno
+spec:
+  selector:
+    app: task-service # Deve corresponder ao label dos Pods do task-service-deployment
+  ports:
+  - protocol: TCP
+    port: 3001       # Porta pela qual o serviço é exposto DENTRO do cluster
+    targetPort: 3001 # Porta onde o contentor do TaskService está a escutar
+  type: ClusterIP    # Apenas acessível de dentro do cluster

@@ -1,0 +1,48 @@
+# k8s/auth-service-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-service-deployment
+  labels:
+    app: auth-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-service
+  template:
+    metadata:
+      labels:
+        app: auth-service
+    spec:
+      containers:
+      - name: auth-service
+        image: auth-service:0.1 # <<< Verifique se o nome e a tag da sua imagem estão corretos
+        imagePullPolicy: IfNotPresent # Ou Never, já que a imagem deve estar no Minikube
+        ports:
+        - containerPort: 3002 # Porta que a sua app AuthService escuta
+        env:
+        - name: NODE_ENV
+          value: "development" # Ou "production" conforme o ambiente
+        - name: AUTH_SERVICE_PORT # A porta que o server.js usa
+          value: "3002"
+        - name: DB_HOST
+          value: "mariadb-service" # Nome do Service Kubernetes da MariaDB
+        - name: DB_PORT
+          value: "3306"
+        - name: DB_USERNAME
+          value: "root" 
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mariadb-secret # Nome do Secret da MariaDB
+              key: MARIADB_ROOT_PASSWORD
+        - name: DB_NAME
+          value: "task_management_db"
+        - name: JWT_SECRET
+          # Idealmente, isto viria de um Kubernetes Secret específico para JWT
+          # Por agora, para simplificar, vamos usar um valor direto (NÃO RECOMENDADO PARA PRODUÇÃO)
+          # Se criou um secret para JWT, use valueFrom: secretKeyRef: ...
+          value: "oseusegredomuitosecreto" # <<< USE O MESMO SEGREDO QUE DEFINIU NOS .env
+        - name: JWT_EXPIRES_IN
+          value: "1h"

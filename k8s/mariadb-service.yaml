@@ -1,0 +1,13 @@
+# mariadb-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mariadb-service # Este será o nome DNS para os outros serviços usarem
+spec:
+  selector:
+    app: mariadb # Deve corresponder ao label dos Pods do Deployment da MariaDB
+  ports:
+  - protocol: TCP
+    port: 3306       # Porta pela qual o serviço é exposto DENTRO do cluster
+    targetPort: 3306 # Porta onde o contentor MariaDB está a escutar
+  type: ClusterIP    # Apenas acessível de dentro do cluster

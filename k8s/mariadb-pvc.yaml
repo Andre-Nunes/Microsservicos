@@ -1,0 +1,11 @@
+# mariadb-pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mariadb-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce # O volume pode ser montado como leitura-escrita por um único nó
+  resources:
+    requests:
+      storage: 1Gi # Solicitar 1 Gigabyte de armazenamento

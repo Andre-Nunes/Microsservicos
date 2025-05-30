@@ -1,0 +1,40 @@
+# k8s/api-gateway-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway-deployment
+  labels:
+    app: api-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-gateway
+  template:
+    metadata:
+      labels:
+        app: api-gateway
+    spec:
+      containers:
+      - name: api-gateway
+        image: api-gateway:0.1 # <<< Verifique se o nome e a tag da sua imagem estão corretos
+        imagePullPolicy: IfNotPresent # Ou Never
+        ports:
+        - containerPort: 3000 # Porta que a sua app api-gateway escuta
+        env:
+        - name: NODE_ENV
+          value: "development"
+        - name: API_GATEWAY_PORT # A porta que o server.js do api-gateway usa
+          value: "3000"
+        - name: AUTH_SERVICE_URL
+          value: "http://auth-service:3002" # Nome do Service Kubernetes e sua porta ClusterIP
+        - name: USER_SERVICE_URL
+          value: "http://user-service:3003" # Nome do Service Kubernetes e sua porta ClusterIP
+        - name: TASK_SERVICE_URL
+          value: "http://task-service:3001" # Nome do Service Kubernetes e sua porta ClusterIP
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: jwt-secret # Nome do Secret que acabámos de definir
+              key: secret      # Chave dentro do Secret
+        # Adicione outras variáveis de ambiente específicas do api-gateway, se houver

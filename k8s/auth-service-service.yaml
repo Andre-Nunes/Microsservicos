@@ -1,0 +1,13 @@
+# k8s/auth-service-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-service # Este será o nome DNS interno
+spec:
+  selector:
+    app: auth-service # Deve corresponder ao label dos Pods do auth-service-deployment
+  ports:
+  - protocol: TCP
+    port: 3002       # Porta pela qual o serviço é exposto DENTRO do cluster
+    targetPort: 3002 # Porta onde o contentor do AuthService está a escutar
+  type: ClusterIP    # Apenas acessível de dentro do cluster

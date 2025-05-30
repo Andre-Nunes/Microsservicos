@@ -1,0 +1,13 @@
+# k8s/user-service-service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: user-service # Este será o nome DNS interno
+spec:
+  selector:
+    app: user-service # Deve corresponder ao label dos Pods do user-service-deployment
+  ports:
+  - protocol: TCP
+    port: 3003       # Porta pela qual o serviço é exposto DENTRO do cluster
+    targetPort: 3003 # Porta onde o contentor do UserService está a escutar
+  type: ClusterIP    # Apenas acessível de dentro do cluster
